@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>inspiredR - Continuous Inspiration</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Montserrat:wght@200;300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="welcome-active">
+    <div class="screensaver-container" id="container">
+        <!-- Welcome Overlay -->
+        <div class="welcome-screen active" id="welcome-screen">
+            
+            <!-- Ken Burns Background Layer -->
+            <div class="welcome-bg bg-active"></div>
+
+            <!-- Top Navigation -->
+            <header class="welcome-nav">
+                <div class="nav-logo">inspiredR</div>
+                <a href="https://github.com/rshankarndev" class="nav-github-btn" target="_blank" title="GitHub">
+                    <i class="fab fa-github"></i>
+                    <span>GitHub</span>
+                </a>
+            </header>
+
+            <!-- Centered Hero Section -->
+            <div class="welcome-hero">
+                <h1 class="hero-title">inspiredR</h1>
+                <button class="dive-in-btn" id="dive-in-btn">Dive In</button>
+            </div>
+
+            <!-- Bottom Ticker -->
+            <div class="welcome-ticker-wrap">
+                <div class="welcome-ticker">
+                    <span>inspiring you&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                    <span>inspiring you&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                    <span>inspiring you&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                    <span>inspiring you&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                    <span>inspiring you&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                    <span>inspiring you&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Background Images (two for crossfading) -->
+        <div class="bg-image bg-active" id="bg-1"></div>
+        <div class="bg-image" id="bg-2"></div>
+        
+        <!-- Overlay -->
+        <div class="overlay"></div>
+
+        <!-- Main Content -->
+        <main class="content">
+            <div class="quote-wrapper">
+                <i class="fas fa-quote-left quote-icon"></i>
+                <blockquote id="quote-text" class="quote-text">Loading inspiration...</blockquote>
+                <cite id="quote-author" class="quote-author"></cite>
+            </div>
+        </main>
+
+        <!-- Fullscreen & Refresh Controls (Bottom Right) -->
+        <div class="controls-container">
+            <button id="refresh-btn" class="control-btn" title="New Quote (Space)">
+                <i class="fas fa-sync-alt"></i>
+            </button>
+            <button id="fullscreen-btn" class="control-btn" title="Toggle Fullscreen (F)">
+                <i class="fas fa-expand"></i>
+            </button>
+        </div>
+
+        <!-- Top Right Settings -->
+        <div class="top-right-controls">
+            <button id="settings-btn" class="control-btn" title="Settings (S)">
+                <i class="fas fa-cog"></i>
+            </button>
+        </div>
+
+        <!-- Clock -->
+        <div class="clock-container">
+            <div id="clock-time" class="time">--:--</div>
+            <div id="clock-date" class="date">----</div>
+        </div>
+    </div>
+
+    <!-- Settings Modal Layout -->
+    <div class="settings-modal" id="settings-modal">
+        <div class="settings-content">
+            <h2>Settings</h2>
+            
+            <div class="settings-section">
+                <label>Quote Topic</label>
+                <div class="topic-row" id="topic-grid">
+                    <button class="topic-pill active" data-topic="inspirational">
+                        <span>Inspirational</span>
+                    </button>
+                    <button class="topic-pill" data-topic="wisdom">
+                        <span>Wisdom</span>
+                    </button>
+                    <button class="topic-pill" data-topic="success">
+                        <span>Success</span>
+                    </button>
+                    <button class="topic-pill" data-topic="love">
+                        <span>Love</span>
+                    </button>
+                    <button class="topic-pill" data-topic="movies">
+                        <span>Movies & TV Shows</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="settings-section">
+                <h3>Shortcuts</h3>
+                <ul class="shortcuts-list">
+                    <li><kbd>Space</kbd> <span>Next Quote</span></li>
+                    <li><kbd>F</kbd> <span>Toggle Fullscreen</span></li>
+                    <li><kbd>S</kbd> <span>Toggle Settings</span></li>
+                </ul>
+            </div>
+
+            <button class="close-pill-btn" id="close-settings">Close Settings</button>
+
+            <div class="made-with-love">
+                made with <i class="fas fa-heart"></i> by rshankarndev
+            </div>
+        </div>
+    </div>
+    
+    <!-- Close screensaver-container -->
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

@@ -1,13 +1,24 @@
 // Constants and State
 const REFRESH_INTERVAL_MS = 600000; // 10 minutes
 
-// API Endpoints based on topic
+// API Endpoints based on topic — using multiple sources as fallback
 const API_URLS = {
-    inspirational: 'https://api.quotable.io/random?tags=inspirational',
-    wisdom: 'https://api.quotable.io/random?tags=wisdom',
-    success: 'https://api.quotable.io/random?tags=success',
-    love: 'https://api.quotable.io/random?tags=love',
-    movies: 'https://raw.githubusercontent.com/skv86/movie-quotes-db/main/quotes.json' // Fallback to local hardcoded list if fetch fails
+    inspirational: [
+        'https://api.quotable.io/quotes/random?tags=inspirational&limit=1',
+        'https://zenquotes.io/api/random'
+    ],
+    wisdom: [
+        'https://api.quotable.io/quotes/random?tags=wisdom&limit=1',
+        'https://zenquotes.io/api/random'
+    ],
+    success: [
+        'https://api.quotable.io/quotes/random?tags=success&limit=1',
+        'https://zenquotes.io/api/random'
+    ],
+    love: [
+        'https://api.quotable.io/quotes/random?tags=love&limit=1',
+        'https://zenquotes.io/api/random'
+    ]
 };
 
 // High quality background search terms based on topic
@@ -19,16 +30,52 @@ const BG_TERMS = {
     movies: ['cinematic', 'moody', 'dark', 'film', 'neon']
 };
 
-// Hardcoded movie quotes fallback with more philosophical/impactful selection
+// Hardcoded movie quotes fallback
 const MOVIE_QUOTES = [
-    { content: "It is not our abilities that show what we truly are… it is our choices.", author: "Albus Dumbledore, Harry Potter" },
-    { content: "All we have to decide is what to do with the time that is given us.", author: "Gandalf, The Lord of the Rings" },
-    { content: "Do, or do not. There is no try.", author: "Yoda, Star Wars" },
-    { content: "Oh yes, the past can hurt. But you can either run from it, or learn from it.", author: "Rafiki, The Lion King" },
-    { content: "Great men are not born great, they grow great.", author: "Don Vito Corleone, The Godfather" },
-    { content: "Some people can’t believe in themselves until someone else believes in them first.", author: "Sean Maguire, Good Will Hunting" },
-    { content: "It’s what you do right now that makes a difference.", author: "Struecker, Black Hawk Down" }
+    { content: "It is not our abilities that show what we truly are… it is our choices.", author: "Albus Dumbledore — Harry Potter" },
+    { content: "All we have to decide is what to do with the time that is given us.", author: "Gandalf — The Lord of the Rings" },
+    { content: "Do, or do not. There is no try.", author: "Yoda — Star Wars" },
+    { content: "Oh yes, the past can hurt. But you can either run from it, or learn from it.", author: "Rafiki — The Lion King" },
+    { content: "Great men are not born great, they grow great.", author: "Don Vito Corleone — The Godfather" },
+    { content: "Some people can't believe in themselves until someone else believes in them first.", author: "Sean Maguire — Good Will Hunting" },
+    { content: "It's what you do right now that makes a difference.", author: "Black Hawk Down" },
+    { content: "Get busy living, or get busy dying.", author: "Andy Dufresne — The Shawshank Redemption" },
+    { content: "Why so serious?", author: "The Joker — The Dark Knight" },
+    { content: "To infinity and beyond!", author: "Buzz Lightyear — Toy Story" }
 ];
+
+// Per-topic fallback quotes when APIs are unreachable
+const FALLBACK_QUOTES = {
+    inspirational: [
+        { content: "The secret of getting ahead is getting started.", author: "Mark Twain" },
+        { content: "It always seems impossible until it's done.", author: "Nelson Mandela" },
+        { content: "Believe you can and you're halfway there.", author: "Theodore Roosevelt" },
+        { content: "You are never too old to set another goal or to dream a new dream.", author: "C.S. Lewis" },
+        { content: "The only way to do great work is to love what you do.", author: "Steve Jobs" }
+    ],
+    wisdom: [
+        { content: "The journey of a thousand miles begins with one step.", author: "Lao Tzu" },
+        { content: "Knowing yourself is the beginning of all wisdom.", author: "Aristotle" },
+        { content: "The only true wisdom is in knowing you know nothing.", author: "Socrates" },
+        { content: "Turn your wounds into wisdom.", author: "Oprah Winfrey" },
+        { content: "Wonder is the beginning of wisdom.", author: "Socrates" }
+    ],
+    success: [
+        { content: "Success is not final, failure is not fatal: it is the courage to continue that counts.", author: "Winston Churchill" },
+        { content: "The road to success and the road to failure are almost exactly the same.", author: "Colin R. Davis" },
+        { content: "I find that the harder I work, the more luck I seem to have.", author: "Thomas Jefferson" },
+        { content: "Don't watch the clock; do what it does. Keep going.", author: "Sam Levenson" },
+        { content: "Success usually comes to those who are too busy to be looking for it.", author: "Henry David Thoreau" }
+    ],
+    love: [
+        { content: "The best thing to hold onto in life is each other.", author: "Audrey Hepburn" },
+        { content: "Love is composed of a single soul inhabiting two bodies.", author: "Aristotle" },
+        { content: "Where there is love there is life.", author: "Mahatma Gandhi" },
+        { content: "You know you're in love when you can't fall asleep because reality is finally better than your dreams.", author: "Dr. Seuss" },
+        { content: "The best love is the kind that awakens the soul and makes us reach for more.", author: "Nicholas Sparks" }
+    ],
+    movies: MOVIE_QUOTES
+};
 
 let isFullscreen = false;
 let currentBgIndex = 1;
@@ -69,8 +116,8 @@ function init() {
         updateTopicUI(savedTopic);
     }
 
-    // Check if user has already entered
-    const hasEntered = localStorage.getItem('hasEntered');
+    // Check if user has already entered (within this tab session)
+    const hasEntered = sessionStorage.getItem('hasEntered');
     if (hasEntered === 'true') {
         welcomeScreen.classList.remove('active');
         document.body.classList.remove('welcome-active');
@@ -141,8 +188,8 @@ function init() {
 }
 
 function startExperience() {
-    // Save state
-    localStorage.setItem('hasEntered', 'true');
+    // Save state for this tab session
+    sessionStorage.setItem('hasEntered', 'true');
 
     // Trigger fluid CSS exit animation
     welcomeScreen.classList.remove('active');
@@ -229,28 +276,39 @@ function displayContent(quoteData, imageUrl) {
 
 async function fetchQuote() {
     if (currentTopic === 'movies') {
-        // Since public movie quote APIs are constantly changing/rate limiting,
-        // we fallback to our internal list for guaranteed high quality performance
-        const randomQuote = MOVIE_QUOTES[Math.floor(Math.random() * MOVIE_QUOTES.length)];
-        return randomQuote;
+        const list = FALLBACK_QUOTES.movies;
+        return list[Math.floor(Math.random() * list.length)];
     }
 
-    try {
-        const url = API_URLS[currentTopic] || API_URLS['inspirational'];
-        const response = await fetch(url);
-        if (!response.ok) throw new Error('API failed');
-        const data = await response.json();
-        // quotable returns array for tags, or single object
-        const item = Array.isArray(data) ? data[0] : data;
-        return { content: item.content, author: item.author };
-    } catch (error) {
-        console.log(`Failed fetching ${currentTopic} quote, falling back...`);
-        // Fallback generic quote
-        return {
-            content: "The only limit to our realization of tomorrow will be our doubts of today.",
-            author: "Franklin D. Roosevelt"
-        };
+    const urls = API_URLS[currentTopic] || API_URLS['inspirational'];
+
+    for (const url of urls) {
+        try {
+            const controller = new AbortController();
+            const timeout = setTimeout(() => controller.abort(), 4000); // 4s timeout per attempt
+            const response = await fetch(url, { signal: controller.signal });
+            clearTimeout(timeout);
+
+            if (!response.ok) continue;
+            const data = await response.json();
+
+            // quotable returns array, zenquotes also returns array
+            const item = Array.isArray(data) ? data[0] : data;
+
+            // Handle both quotable ({content, author}) and zenquotes ({q, a}) shapes
+            const content = item.content || item.q;
+            const author = item.author || item.a;
+
+            if (content && author) return { content, author };
+        } catch (err) {
+            console.warn(`API failed (${url}):`, err.message);
+        }
     }
+
+    // All APIs failed — use a local fallback from the topic list
+    console.log(`All APIs failed for '${currentTopic}', using local fallback.`);
+    const fallbacks = FALLBACK_QUOTES[currentTopic] || FALLBACK_QUOTES['inspirational'];
+    return fallbacks[Math.floor(Math.random() * fallbacks.length)];
 }
 
 async function fetchImage() {
